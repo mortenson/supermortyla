@@ -1,0 +1,48 @@
+<html>
+  <head>
+      <script src='quintus-all.js'></script>
+      <title>Super Mortyla</title>
+      <style>
+          #loading {
+              margin:50px auto;
+              position:fixed;
+              width:100%;
+              text-align:center;
+          }
+
+          #loading-container {
+              position:relative;
+              margin:0 auto;
+              width:50%;
+              height:20px;
+              border:1px solid black;
+              text-align:center;
+              padding-top:10px;
+              color: #165b74;
+              text-transform: uppercase;
+          }
+
+          #loading-progress {
+              width:0;
+              background-color: #d6783e;
+              position:absolute;
+              height:30px;
+              top:0;
+              left:0;
+          }
+
+          body {
+              background:#7acfeb;
+          }
+      </style>
+  </head>
+  <body>
+  <script src='main.js'></script>
+  <div id="loading">
+      <div id="loading-container">
+          <div id="loading-progress"></div>
+      </div>
+      <img src="images/custard.gif" />
+  </div>
+  </body>
+</html>
