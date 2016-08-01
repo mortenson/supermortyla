@@ -782,6 +782,9 @@
     'firework.png', 'complete.wav', 'firework.wav', 'end.png', 'Jumpshot.wav',
     'mykal_push.png', 'sam_push.png'],
     function () {
+      // Remove loading element.
+      document.body.removeChild(document.getElementById('loading'));
+
       Q.sheet('sam', 'sam.png', {tilew: 96, tileh: 96});
       Q.sheet('mykal', 'mykal.png', {tilew: 96, tileh: 96});
       Q.sheet('mykal_push', 'mykal_push.png', {tilew: 96, tileh: 96});
