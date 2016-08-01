@@ -1,5 +1,5 @@
 (function () {
-  
+
   "use strict";
 
   // Initialize Quintus with our required modules.
@@ -24,61 +24,59 @@
       collisions: []
     },
 
-    added: function() {
+    added: function () {
       var p = this.entity.p;
 
-      Q._defaults(p,this.defaults);
+      Q._defaults(p, this.defaults);
 
-      this.entity.on('step',this,'step');
-      this.entity.on('bump.bottom',this,'landed');
+      this.entity.on('step', this, 'step');
+      this.entity.on('bump.bottom', this, 'landed');
 
       p.landed = 0;
-      p.direction ='right';
+      p.direction = 'right';
     },
 
-    landed: function(col) {
+    landed: function () {
       var p = this.entity.p;
-      p.landed = 1/5;
+      p.landed = 1 / 5;
     },
 
-    step: function(dt) {
-      var p = this.entity.p;
+    step: function (dt) {
+      var p = this.entity.p, collision, i;
 
-      if(p.ignoreControls === undefined || !p.ignoreControls) {
-        var collision = null;
-
+      if (p.ignoreControls === undefined || !p.ignoreControls) {
         // Follow along the current slope, if possible.
-        if(p.collisions !== undefined && p.collisions.length > 0 && (Q.inputs['mleft'] || Q.inputs['mright'] || p.landed > 0)) {
-          if(p.collisions.length === 1) {
+        if (p.collisions !== undefined && p.collisions.length > 0 && (Q.inputs.mleft || Q.inputs.mright || p.landed > 0)) {
+          if (p.collisions.length === 1) {
             collision = p.collisions[0];
           } else {
             // If there's more than one possible slope, follow slope with negative Y normal
             collision = null;
 
-            for(var i = 0; i < p.collisions.length; i++) {
-              if(p.collisions[i].normalY < 0) {
+            for (i = 0; i < p.collisions.length; i += 1) {
+              if (p.collisions[i].normalY < 0) {
                 collision = p.collisions[i];
               }
             }
           }
 
           // Don't climb up walls.
-          if(collision !== null && collision.normalY > -0.3 && collision.normalY < 0.3) {
+          if (collision !== null && collision.normalY > -0.3 && collision.normalY < 0.3) {
             collision = null;
           }
         }
 
-        if(Q.inputs['mleft']) {
+        if (Q.inputs.mleft) {
           p.direction = 'mleft';
-          if(collision && p.landed > 0) {
+          if (collision && p.landed > 0) {
             p.vx = p.speed * collision.normalY;
             p.vy = -p.speed * collision.normalX;
           } else {
             p.vx = -p.speed;
           }
-        } else if(Q.inputs['mright']) {
+        } else if (Q.inputs.mright) {
           p.direction = 'mright';
-          if(collision && p.landed > 0) {
+          if (collision && p.landed > 0) {
             p.vx = -p.speed * collision.normalY;
             p.vy = p.speed * collision.normalX;
           } else {
@@ -86,24 +84,24 @@
           }
         } else {
           p.vx = 0;
-          if(collision && p.landed > 0) {
+          if (collision && p.landed > 0) {
             p.vy = 0;
           }
         }
 
-        if(p.landed > 0 && (Q.inputs['mup'] || Q.inputs['maction']) && !p.jumping) {
+        if (p.landed > 0 && (Q.inputs.mup || Q.inputs.maction) && !p.jumping) {
           p.vy = p.jumpSpeed;
           p.landed = -dt;
           p.jumping = true;
-        } else if(Q.inputs['mup'] || Q.inputs['mAction']) {
+        } else if (Q.inputs.mup || Q.inputs.mAction) {
           this.entity.trigger('jump', this.entity);
           p.jumping = true;
         }
 
-        if(p.jumping && !(Q.inputs['mup'] || Q.inputs['maction'])) {
+        if (p.jumping && !(Q.inputs.mup || Q.inputs.maction)) {
           p.jumping = false;
           this.entity.trigger('jumped', this.entity);
-          if(p.vy < p.jumpSpeed / 3) {
+          if (p.vy < p.jumpSpeed / 3) {
             p.vy = p.jumpSpeed / 3;
           }
         }
@@ -115,51 +113,51 @@
   // Defines animations used by our sprites. In a larger game I would have
   // stored this information in JSON as Javascript isn't needed here.
   Q.animations('switch', {
-    on: {frames: [1], rate: 1/3},
-    off: {frames: [0], rate: 1/3}
+    on: {frames: [1], rate: 1 / 3},
+    off: {frames: [0], rate: 1 / 3}
   });
 
   Q.animations('boombox', {
-    playing: {frames: [0,1], rate: 1/3}
+    playing: {frames: [0, 1], rate: 1 / 3}
   });
 
   Q.animations('vent_air', {
-    on: {frames: [0,1], rate: 1/3},
-    off: {frames: [0], rate: 1/3}
+    on: {frames: [0, 1], rate: 1 / 3},
+    off: {frames: [0], rate: 1 / 3}
   });
 
   Q.animations('unipiper', {
-    left: {frames: [0,1], rate: 1/3},
-    right: {frames: [2,3], rate: 1/3}
+    left: {frames: [0, 1], rate: 1 / 3},
+    right: {frames: [2, 3], rate: 1 / 3}
   });
 
   Q.animations('sam', {
-    run_right: {frames: [0,1,2,3], rate: 1/4},
-    run_left: {frames: [4,5,6,7], rate: 1/4},
-    stand_right: {frames: [0], rate: 1/5},
-    stand_left: {frames: [4], rate: 1/5}
+    run_right: {frames: [0, 1, 2, 3], rate: 1 / 4},
+    run_left: {frames: [4, 5, 6, 7], rate: 1 / 4},
+    stand_right: {frames: [0], rate: 1 / 5},
+    stand_left: {frames: [4], rate: 1 / 5}
   });
 
   Q.animations('mykal', {
-    run_right: {frames: [0,1], rate: 1/4},
-    run_left: {frames: [2,3], rate: 1/4},
-    stand_right: {frames: [0], rate: 1/5},
-    stand_left: {frames: [2], rate: 1/5}
+    run_right: {frames: [0, 1], rate: 1 / 4},
+    run_left: {frames: [2, 3], rate: 1 / 4},
+    stand_right: {frames: [0], rate: 1 / 5},
+    stand_left: {frames: [2], rate: 1 / 5}
   });
 
   Q.animations('mykal_push', {
-    playing: {frames: [0,1], rate: 1/2}
+    playing: {frames: [0, 1], rate: 1 / 2}
   });
 
   Q.animations('sam_push', {
-    playing: {frames: [0,1], rate: 1/2}
+    playing: {frames: [0, 1], rate: 1 / 2}
   });
 
   Q.animations('firework', {
-    boom: {frames: [0,1,3,4,5,6,7,8,9,10], rate: 1/5, loop: false, trigger: 'animation_finished'}
+    boom: {frames: [0, 1, 3, 4, 5, 6, 7, 8, 9, 10], rate: 1 / 5, loop: false, trigger: 'animation_finished'}
   });
 
-  Q.Sprite.extend('Unipiper',{
+  Q.Sprite.extend('Unipiper', {
     init: function (p) {
       this._super(p, {
         sheet: 'unipiper',
@@ -168,7 +166,7 @@
         y: 300,
         x_bound: [4224, 4516],
         vx: -600,
-        points: [[-20,-45],[20,-45],[20,45],[-20,45]],
+        points: [[-20, -45], [20, -45], [20, 45], [-20, 45]],
         direction: -1
       });
 
@@ -178,13 +176,13 @@
       // Make sure the Unipiper continues rolling around if a player
       // collides with him. In a game with death, this would decrease life.
       this.on('bump.left', function (collision) {
-        if(collision.obj.isA('Sam') || collision.obj.isA('Mykal')) {
+        if (collision.obj.isA('Sam') || collision.obj.isA('Mykal')) {
           collision.obj.p.x -= 5;
         }
       });
 
       this.on('bump.right', function (collision) {
-        if(collision.obj.isA('Sam') || collision.obj.isA('Mykal')) {
+        if (collision.obj.isA('Sam') || collision.obj.isA('Mykal')) {
           collision.obj.p.x += 5;
         }
       });
@@ -194,18 +192,16 @@
 
     // The Unipiper bounces back and forth on his platform to make it tough
     // for players to get past him.
-    step: function (dt) {
+    step: function () {
       if (this.p.x <= this.p.x_bound[0]) {
         this.p.direction = 1;
-      }
-      else if (this.p.x >= this.p.x_bound[1]) {
+      } else if (this.p.x >= this.p.x_bound[1]) {
         this.p.direction = -1;
       }
       this.p.vx = 400 * this.p.direction;
       if (this.p.vx < 0) {
         this.play('left');
-      }
-      else {
+      } else {
         this.play('right');
       }
     }
@@ -213,7 +209,8 @@
 
   // Step function for players. For the most part, this only controls animation
   // and respawn scenarios.
-  function playerStep (dt) {
+  function playerStep () {
+    var closest, distance, i;
     if (this.p.vx > 0) {
       this.stage.follow(this);
       this.play('run_right');
@@ -221,19 +218,20 @@
       this.stage.follow(this);
       this.play('run_left');
     } else {
-      var direction = this.p.direction.replace('m', '');
-      this.play('stand_' + direction);
+      this.play('stand_' + this.p.direction.replace('m', ''));
     }
 
     // Check if we need to be re-spawned (2000px is well off the map).
     if (this.p.y > 2000) {
       // Loop through the stages pre-defined respawn points and find the
       // one closest to the players last resting position.
-      var closest = false;
-      for (var i in this.stage.respawn_points) {
-        var distance = this.p.last_coord[0] - this.stage.respawn_points[i][0];
-        if (!closest || (distance < closest[1] && distance >= 0)) {
-          closest = [i, distance];
+      closest = false;
+      for (i in this.stage.respawn_points) {
+        if (this.stage.respawn_points.hasOwnProperty(i)) {
+          distance = this.p.last_coord[0] - this.stage.respawn_points[i][0];
+          if (!closest || (distance < closest[1] && distance >= 0)) {
+            closest = [i, distance];
+          }
         }
       }
       // Respawn the player. In a big game you could take a life away too.
@@ -241,23 +239,22 @@
       this.p.vy = 0;
       this.p.x = this.stage.respawn_points[closest[0]][0];
       this.p.y = this.stage.respawn_points[closest[0]][1];
-    }
-    // If the player is completely stopped, save their position. This
-    // prevents dirty cheaters from jumping off cliffs and being rewarded by
-    // respawning on the other side.
-    else if (this.p.vy == 0 && this.p.vx == 0) {
-     this.p.last_coord = [this.p.x, this.p.y];
+    } else if (this.p.vy === 0 && this.p.vx === 0) {
+      // If the player is completely stopped, save their position. This
+      // prevents dirty cheaters from jumping off cliffs and being rewarded by
+      // respawning on the other side.
+      this.p.last_coord = [this.p.x, this.p.y];
     }
   }
 
-  Q.Sprite.extend('Sam',{
+  Q.Sprite.extend('Sam', {
     init: function (p) {
       this._super(p, {
         sheet: 'sam',
         sprite: 'sam',
         x: 96,
         y: 650,
-        points: [[-20,-45],[20,-45],[20,45],[-20,45]],
+        points: [[-20, -45], [20, -45], [20, 45], [-20, 45]],
         speed: 300,
         jumpSpeed: -500,
         last_jump: false
@@ -279,14 +276,14 @@
     step: playerStep
   });
 
-  Q.Sprite.extend('Mykal',{
+  Q.Sprite.extend('Mykal', {
     init: function (p) {
       this._super(p, {
         sheet: 'mykal',
         sprite: 'mykal',
         x: 0,
         y: 650,
-        points: [[-28,-40],[28,-40],[28,48],[-28,48]],
+        points: [[-28, -40], [28, -40], [28, 48], [-28, 48]],
         speed: 300,
         jumpSpeed: -500,
         last_jump: false
@@ -308,7 +305,7 @@
 
   // The "Bridge" sprite is controlled by two triggers players must press in
   // turns to cross it as a couple.
-  Q.Sprite.extend('Bridge',{
+  Q.Sprite.extend('Bridge', {
     init: function (p) {
       this._super(p, {
         sheet: 'bridge',
@@ -326,7 +323,7 @@
       });
     },
 
-    step: function (dt) {
+    step: function () {
       if (!this.pressed) {
         this.animate({x: 820, angle: 90});
       }
@@ -335,20 +332,20 @@
   });
 
   // The coffee cup is a static object players jump onto.
-  Q.Sprite.extend('Coffee',{
+  Q.Sprite.extend('Coffee', {
     init: function (p) {
       this._super(p, {
         sheet: 'coffee',
         sprite: 'coffee',
         x: 3360,
         y: 550,
-        points: [[39,144],[-39,144],[-78,-144],[78,-144]]
+        points: [[39, 144], [-39, 144], [-78, -144], [78, -144]]
       });
     }
   });
 
   // The sign is just visual and points players towards brunch.
-  Q.Sprite.extend('Sign',{
+  Q.Sprite.extend('Sign', {
     init: function (p) {
       this._super(p, {
         sheet: 'sign',
@@ -361,7 +358,7 @@
   });
 
   // The brunch building is also just for visuals, but does not allow clipping.
-  Q.Sprite.extend('Brunch',{
+  Q.Sprite.extend('Brunch', {
     init: function (p) {
       this._super(p, {
         sheet: 'brunch',
@@ -374,7 +371,7 @@
   });
 
   // The church sits at the end of the map and is just visual.
-  Q.Sprite.extend('Church',{
+  Q.Sprite.extend('Church', {
     init: function (p) {
       this._super(p, {
         sheet: 'church',
@@ -387,11 +384,11 @@
   });
 
   // The start screen is the only sprite in the first stage.
-  Q.Sprite.extend('Start',{
+  Q.Sprite.extend('Start', {
     init: function (p) {
       var scale = 1;
       if (Q.width < 1024) {
-        scale = Q.width/1024;
+        scale = Q.width / 1024;
       }
       this._super(p, {
         sheet: 'start',
@@ -405,7 +402,7 @@
   });
 
   // The end screen is a sign that floats up the stage on top of the church.
-  Q.Sprite.extend('End',{
+  Q.Sprite.extend('End', {
     init: function (p) {
       this._super(p, {
         sheet: 'end',
@@ -416,16 +413,16 @@
       });
     },
 
-    step: function (dt) {
+    step: function () {
       if (this.p.y < 1050) {
-        ++this.p.y;
+        this.p.y += 1;
       }
     }
   });
 
   // The "Push" sprites are just visual indicators of what actoin players
   // have to take at different points in the game.
-  Q.Sprite.extend('SamPush',{
+  Q.Sprite.extend('SamPush', {
     init: function (p) {
       this._super(p, {
         sheet: 'sam_push',
@@ -439,7 +436,7 @@
     }
   });
 
-  Q.Sprite.extend('MykalPush',{
+  Q.Sprite.extend('MykalPush', {
     init: function (p) {
       this._super(p, {
         sheet: 'mykal_push',
@@ -456,14 +453,14 @@
   // The pastry sprite is a ramp that players move around and use to climb on
   // top of the coffee cup. It's a bit tricky as we want players to be able to
   // push it, but also walk on it without it moving around.
-  Q.Sprite.extend('Pastry',{
+  Q.Sprite.extend('Pastry', {
     init: function (p) {
       this._super(p, {
         sheet: 'pastry',
         sprite: 'pastry',
         x: 3000,
         y: 100,
-        points: [[-96,96],[-96,0],[96,-96],[96,96]]
+        points: [[-96, 96], [-96, 0], [96, -96], [96, 96]]
       });
       this.add('2d');
 
@@ -484,7 +481,7 @@
   });
 
   // The boombox is pushed to help Mykal up to the hipster area of the map.
-  Q.Sprite.extend('Boombox',{
+  Q.Sprite.extend('Boombox', {
     init: function (p) {
       this._super(p, {
         sheet: 'boombox',
@@ -508,7 +505,7 @@
 
   // Hipsters bounce in place and change direction every now and then, letting
   // Sam and Mykal bounce on their heads as they wait in line for brunch.
-  Q.Sprite.extend('Hipster',{
+  Q.Sprite.extend('Hipster', {
     init: function (p) {
       this._super(p, {
         sheet: 'hipster_01',
@@ -521,14 +518,14 @@
       this.on('bump.top', function (collision) {
         collision.obj.p.vy = -730;
         collision.obj.p.y -= 5;
-        if(collision.obj.isA('Mykal') || collision.obj.isA('Sam')) {
+        if (collision.obj.isA('Mykal') || collision.obj.isA('Sam')) {
           Q.audio.play('stomp.wav', {debounce: 500});
         }
       });
     },
 
-    step: function (dt) {
-      if (this.p.vy == 0) {
+    step: function () {
+      if (this.p.vy === 0) {
         this.p.vy = -300;
         this.p.flip = Math.random() >= 0.5 ? 'x' : false;
       }
@@ -538,22 +535,22 @@
   // The triggers are buttons that lower the Bridge sprite down so that a
   // player can cross to the other side. You can set their "target" property
   // to any other sprite to have an event triggered when pressed.
-  Q.Sprite.extend('Trigger',{
+  Q.Sprite.extend('Trigger', {
     init: function (p) {
       this._super(p, {
         sheet: 'switch',
         sprite: 'switch',
         x: 600,
         y: 650,
-        points: [[-48,36],[48,36],[48,48],[-48, 48]],
+        points: [[-48, 36], [48, 36], [48, 48], [-48, 48]],
         active: false,
         state: false
       });
       this.add('2d');
       this.add('animation');
 
-      this.on('bump.top',function (collision) {
-        if(collision.obj.isA('Mykal') || collision.obj.isA('Sam')) {
+      this.on('bump.top', function (collision) {
+        if (collision.obj.isA('Mykal') || collision.obj.isA('Sam')) {
           this.target.trigger('trigger.press');
           if (!this.p.state) {
             Q.audio.play('trigger.wav');
@@ -567,7 +564,7 @@
       this.play('off');
     },
 
-    step: function (dt) {
+    step: function () {
       if (!this.p.active) {
         this.p.state = false;
         this.play('off');
@@ -577,14 +574,14 @@
   });
 
   // The air vent shoots Mykal up to the clouds, but Sam gets no lift.
-  Q.Sprite.extend('VentAir',{
+  Q.Sprite.extend('VentAir', {
     init: function (p) {
       this._super(p, {
         sheet: 'vent_air',
         sprite: 'vent_air',
         x: 2350,
         y: 620,
-        points: [[-50,49],[50,49],[50,50],[-50,50]],
+        points: [[-50, 49], [50, 49], [50, 50], [-50, 50]],
         power: 1000,
         active: false,
         state: false
@@ -594,8 +591,8 @@
       this.add('animation');
 
       // This logic blows.
-      this.on('bump.top',function (collision) {
-        if(collision.obj.isA('Mykal')) {
+      this.on('bump.top', function (collision) {
+        if (collision.obj.isA('Mykal')) {
           collision.obj.p.vy = this.p.power * -1;
           if (!this.p.state) {
             Q.audio.play('vent.wav');
@@ -608,7 +605,7 @@
       this.play('on');
     },
 
-    step: function (dt) {
+    step: function () {
       if (!this.p.active) {
         this.p.state = false;
       }
@@ -620,10 +617,11 @@
   // Fireworks explode whereever you place them, playing a sound and moving to
   // new location after their animation is complete. There's a bit of stupid
   // random logic thrown in to prevent the firework clusters from looking fake.
-  Q.Sprite.extend('Firework',{
+  Q.Sprite.extend('Firework', {
     init: function (p) {
-      var x = Math.floor(Math.random() * 700) + 8000;
-      var y = Math.floor(Math.random() * 500);
+      var x = Math.floor(Math.random() * 700) + 8000,
+        y = Math.floor(Math.random() * 500),
+        self = this;
       this._super(p, {
         sheet: 'firework',
         sprite: 'firework',
@@ -634,17 +632,16 @@
 
       this.add('animation');
 
-      var self = this;
-      setTimeout(function (){self.play('boom')}, Math.floor(Math.random() * 200));
+      setTimeout(function () { self.play('boom'); }, Math.floor(Math.random() * 200));
 
       this.on('animation_finished', function () {
         this.p.x = Math.floor(Math.random() * 800) + 8000;
         this.p.y = Math.floor(Math.random() * 500) - 200;
         this.play('boom');
-        var is_playing = false;
-        for (var i in Q.audio.playingSounds) {
+        var is_playing = false, i;
+        for (i in Q.audio.playingSounds) {
           if (Q.audio.playingSounds.hasOwnProperty(i)) {
-            if (Q.audio.playingSounds[i].assetName == 'firework.wav') {
+            if (Q.audio.playingSounds[i].assetName === 'firework.wav') {
               is_playing = true;
             }
           }
@@ -659,7 +656,7 @@
 
   // This sprite is a text bubble that follows the current player around with
   // contextual information about the game.
-  Q.Sprite.extend('Text',{
+  Q.Sprite.extend('Text', {
     init: function (p) {
       this._super(p, {
         sheet: 'text',
@@ -675,21 +672,19 @@
       });
     },
 
-    step: function (dt) {
+    step: function () {
       var target = this.stage.viewport.following.p;
       if (this.p.hidden && this.p.triggers.length > 0) {
         if (target.x >= this.p.triggers[this.p.trigger]) {
           this.p.frame = this.p.trigger;
           this.p.hidden = false;
-          ++this.p.trigger;
+          this.p.trigger += 1;
         }
-      }
-      else if (this.p.timeout <= 0) {
+      } else if (this.p.timeout <= 0) {
         this.p.timeout = 200;
         this.p.hidden = true;
-      }
-      else {
-        --this.p.timeout;
+      } else {
+        this.p.timeout -= 1;
       }
       this.p.x = target.x;
       this.p.y = target.y - 96;
@@ -697,12 +692,13 @@
   });
 
   // The start screen just displays an image and waits for the player to start.
-  Q.scene('start',function (stage) {
+  Q.scene('start', function (stage) {
     stage.insert(new Q.Start());
   });
 
   // The main stage. This logic is mostly just placing sprites on screen. 
-  Q.scene('main',function (stage) {
+  Q.scene('main', function (stage) {
+    var bridge, trigger1, trigger2, i, sam, hipster, sprite;
     // Display a solid color background and a Portland-inspired skyline.
     stage.insert(new Q.Repeater({asset: 'background_empty.png', speedX: 0.5, speedY: 0.5, type: 0}));
     stage.insert(new Q.Repeater({asset: 'background.png', speedX: 0.5, speedY: 0.5, type: 0, repeatY: false}));
@@ -718,12 +714,11 @@
     // Add all the sprites. I think ideally this would be done in another tile
     // map, so that adding duplicate sprites would be easy and this file would
     // contain no static X/Y values, which is currently has a ton of.
-    var sam = new Q.Sam();
-    var mykal = new Q.Mykal();
-    var bridge = new Q.Bridge().add('tween');
-    var trigger1 = new Q.Trigger();
-    var trigger2 = new Q.Trigger();
+    bridge = new Q.Bridge().add('tween');
+    trigger1 = new Q.Trigger();
+    trigger2 = new Q.Trigger();
     trigger2.p.x = 1400;
+    sam = new Q.Sam();
 
     trigger1.target = bridge;
     trigger2.target = bridge;
@@ -734,7 +729,7 @@
     stage.insert(new Q.Sign());
     stage.insert(new Q.Church());
     stage.insert(sam);
-    stage.insert(mykal);
+    stage.insert(new Q.Mykal());
     stage.insert(bridge);
     stage.insert(trigger1);
     stage.insert(trigger2);
@@ -745,15 +740,13 @@
 
     stage.insert(new Q.VentAir());
 
-    var unipiper = new Q.Unipiper();
-    stage.insert(unipiper);
+    stage.insert(new Q.Unipiper());
 
     // Add some random hipsters to the brunch line.
-    var x = 5600;
-    for (var i=1; i<=20; ++i) {
-      var hipster = new Q.Hipster();
-      var sprite = Math.floor(Math.random() * 4) + 1;
-      hipster.p.x = x + (i*50);
+    for (i = 1; i <= 20; i += 1) {
+      hipster = new Q.Hipster();
+      sprite = Math.floor(Math.random() * 4) + 1;
+      hipster.p.x = 5600 + (i * 50);
       hipster.p.sprite = hipster.p.sheet = 'hipster_0' + sprite;
       stage.insert(hipster);
     }
@@ -766,12 +759,12 @@
     // their position is recorded and the next time they fall, they are placed
     // at the nearest respawn point (as long as it's behind them).
     stage.respawn_points = [
-      [0,96],
-      [700,96],
-      [1152,96],
+      [0, 96],
+      [700, 96],
+      [1152, 96],
       [3360, 192],
-      [3840,96],
-      [8000,96]
+      [3840, 96],
+      [8000, 96]
     ];
 
     // Play our background music. Thank you https://soundcloud.com/eric-skiff!
@@ -789,52 +782,50 @@
     'firework.png', 'complete.wav', 'firework.wav', 'end.png', 'Jumpshot.wav',
     'mykal_push.png', 'sam_push.png'],
     function () {
-      Q.sheet('sam','sam.png', {tilew: 96, tileh: 96});
-      Q.sheet('mykal','mykal.png', {tilew: 96, tileh: 96});
-      Q.sheet('mykal_push','mykal_push.png', {tilew: 96, tileh: 96});
-      Q.sheet('sam_push','sam_push.png', {tilew: 96, tileh: 96});
-      Q.sheet('tiles','tiles.png', {tilew: 96, tileh: 96});
-      Q.sheet('switch','switch.png', {tilew: 96, tileh: 96});
-      Q.sheet('bridge','bridge.png', {tilew: 480, tileh: 96});
-      Q.sheet('vent_air','vent_air.png', {tilew: 96, tileh: 96});
-      Q.sheet('unipiper','unipiper.png', {tilew: 96, tileh: 96});
-      Q.sheet('coffee','coffee.png', {tilew: 156, tileh: 288});
-      Q.sheet('pastry','cross.png', {tilew: 192, tileh: 192});
-      Q.sheet('boombox','boombox.png', {tilew: 96, tileh: 96});
-      Q.sheet('hipster_01','hipster_01.png', {tilew: 40, tileh: 94});
-      Q.sheet('hipster_02','hipster_02.png', {tilew: 45, tileh: 87});
-      Q.sheet('hipster_03','hipster_03.png', {tilew: 48, tileh: 81});
-      Q.sheet('hipster_04','hipster_04.png', {tilew: 48, tileh: 96});
-      Q.sheet('text','text.png', {tilew: 96, tileh: 96});
-      Q.sheet('sign','brunch_sign.png', {tilew: 96, tileh: 96});
-      Q.sheet('brunch','brunch.png', {tilew: 384, tileh: 384});
-      Q.sheet('church','church.png', {tilew: 384, tileh: 603});
-      Q.sheet('firework','firework.png', {tilew: 96, tileh: 96});
-      Q.sheet('end','end.png', {tilew: 960, tileh: 500});
-      Q.sheet('start','start.png', {tilew: 1024, tileh: 768});
+      Q.sheet('sam', 'sam.png', {tilew: 96, tileh: 96});
+      Q.sheet('mykal', 'mykal.png', {tilew: 96, tileh: 96});
+      Q.sheet('mykal_push', 'mykal_push.png', {tilew: 96, tileh: 96});
+      Q.sheet('sam_push', 'sam_push.png', {tilew: 96, tileh: 96});
+      Q.sheet('tiles', 'tiles.png', {tilew: 96, tileh: 96});
+      Q.sheet('switch', 'switch.png', {tilew: 96, tileh: 96});
+      Q.sheet('bridge', 'bridge.png', {tilew: 480, tileh: 96});
+      Q.sheet('vent_air', 'vent_air.png', {tilew: 96, tileh: 96});
+      Q.sheet('unipiper', 'unipiper.png', {tilew: 96, tileh: 96});
+      Q.sheet('coffee', 'coffee.png', {tilew: 156, tileh: 288});
+      Q.sheet('pastry', 'cross.png', {tilew: 192, tileh: 192});
+      Q.sheet('boombox', 'boombox.png', {tilew: 96, tileh: 96});
+      Q.sheet('hipster_01', 'hipster_01.png', {tilew: 40, tileh: 94});
+      Q.sheet('hipster_02', 'hipster_02.png', {tilew: 45, tileh: 87});
+      Q.sheet('hipster_03', 'hipster_03.png', {tilew: 48, tileh: 81});
+      Q.sheet('hipster_04', 'hipster_04.png', {tilew: 48, tileh: 96});
+      Q.sheet('text', 'text.png', {tilew: 96, tileh: 96});
+      Q.sheet('sign', 'brunch_sign.png', {tilew: 96, tileh: 96});
+      Q.sheet('brunch', 'brunch.png', {tilew: 384, tileh: 384});
+      Q.sheet('church', 'church.png', {tilew: 384, tileh: 603});
+      Q.sheet('firework', 'firework.png', {tilew: 96, tileh: 96});
+      Q.sheet('end', 'end.png', {tilew: 960, tileh: 500});
+      Q.sheet('start', 'start.png', {tilew: 1024, tileh: 768});
 
       var start_stage = Q.stageScene('start');
       start_stage.on('step', function () {
         // If the user presses "enter", start the next stage!
         if (Q.inputs.enter) {
-          var main_stage = Q.stageScene('main');
-          var delay = 200;
-          var fireworks = false;
+          var main_stage = Q.stageScene('main'),
+            delay = 200,
+            fireworks = false;
           // Our stage logic is really simple, we basically just check to see
           // if the user is at the end of the stage and play the closing
           // credits if so. This seems messy because I had to finish the game
           // quick and start actually planning the wedding!
           main_stage.on('step', function () {
             if (this.viewport.centerX > 7900 || this.viewport.scale < 1) {
-              if (this.viewport.scale > .5) {
+              if (this.viewport.scale > 0.5) {
                 if (!delay) {
-                  this.viewport.scale -= .01;
+                  this.viewport.scale -= 0.01;
+                } else {
+                  delay -= 1;
                 }
-                else {
-                  --delay;
-                }
-              }
-              else if (!fireworks) {
+              } else if (!fireworks) {
                 this.insert(new Q.Firework());
                 this.insert(new Q.Firework());
                 this.insert(new Q.Firework());
@@ -849,8 +840,7 @@
 
                 // Insert a splash screen to RSVP.
                 this.insert(new Q.End());
-              }
-              else {
+              } else {
                 if (Q.inputs.enter) {
                   Q.stage().pause();
                   window.location.href = 'rsvp';
@@ -864,8 +854,8 @@
       // We use a really simple HTML loading bar to track progress.
       progressCallback: function (loaded, total) {
         var element = document.getElementById('loading-progress');
-        element.style.width = Math.floor(loaded/total*100) + '%';
+        element.style.width = Math.floor(loaded / total * 100) + '%';
       }
     });
 
-})();
+}());
